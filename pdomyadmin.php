@@ -111,7 +111,7 @@
 						#nav a {color:#000000}
 						#tblist a {color:#555555}
 						#collist li {color:#888888}
-						#nav{width:auto;min-width:300px;height:auto;min-height:100%;border-right:1px solid #BFBFBF;border-bottom:1px solid #BFBFBF;}
+						#nav{box-sizing:border-box;width:auto;min-width:300px;height:auto;min-height:100%;border-right:1px solid #BFBFBF;border-bottom:1px solid #BFBFBF;}
 						#nav, #info {background-color:#F3F3F3;}
 						ul {list-style:none;}
 						#content{overflow-y:hidden;width:auto;}
