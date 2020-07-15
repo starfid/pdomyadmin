@@ -137,7 +137,8 @@
 							form {width:100%}
 							textarea {width:92%;}
 							#content {overflow:auto;}
-							h3 {display:block}
+							h3 {display:block;padding-left:0;}
+							h2 {width:82%;padding-right:5px}
 						}
 					</style>
 					<script type="text/javascript">
