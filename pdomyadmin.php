@@ -152,13 +152,17 @@
 							document.getElementById("sql").value = "select \\n* \\nfrom "+tbl+" \\norder by "+col+" desc \\nlimit 10";
 							encrypt();
 						}
+						function describe(tbl){
+							document.getElementById("sql").value = "describe "+tbl;
+							encrypt();
+						}
 						function encrypt(){
 							document.getElementById("sql").value = btoa(document.getElementById("sql").value);
 							document.getElementsByTagName("form")[0].submit();
 						}
 					</script>
 				</head>
-				</body>
+				<body>
 EOT;
 
 
@@ -197,7 +201,8 @@ EOT;
 			$html .= "</form>";
 			
 			$info = !empty($this->error)?$this->error:$this->affectedRows." rows in ".$this->querySpeed." seconds";
-			$html .= "<div id=\"info\">".$info."</div>";
+			$describe = empty($this->selectedTable)?:" onclick=\"describe('".$this->selectedTable."')\"";
+			$html .= "<div id=\"info\"".$describe.">".$info."</div>";
 
 			if(is_array($this->result) && count($this->result) > 0) {
 				$html .= "<table cellpadding=\"10\">";
