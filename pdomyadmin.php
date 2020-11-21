@@ -62,7 +62,8 @@
 			$result = Array();
 			try {
 				$time_start = microtime(true);
-
+				
+				$sql = addcslashes($sql,'"'); //csv enclosed sign
 				$query = $this->link->query($sql);
 				$this->querySpeed = number_format((microtime(true)-$time_start),4);
 				$this->placeholder = $sql;
