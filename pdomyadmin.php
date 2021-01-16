@@ -126,8 +126,8 @@
 						table {border-collapse:collapse;font-size:20px}
 						th {background-color:#E6E6E6;font-weight:normal;cursor:pointer}
 						@media (prefers-color-scheme: dark) {
-							body,#content {background-color:#575652}
-							#nav, form, textarea, #run, #info, th,td {color:#E0DED9;background-color:#72706B;border-color:#83837C}
+							body,#content {background-color:#353431}
+							#nav, form, textarea, #run, #info, th,td {color:#ffffff;background-color:#3E3D39;border-color:#353431}
 							#nav a {color:#E0DED9;}
 							#nav {border:0}
 							#tblist a {color:#C8C5BB}
