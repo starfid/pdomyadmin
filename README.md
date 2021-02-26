@@ -5,5 +5,5 @@
 - PHP Data Object (PDO).
 - Responsive web page.
 - Dark mode.
-- Tested on PHP 7.4.7.
+- Tested on PHP 5.3 - 8.
 - Encrypted SQL query to bypass Web Application Firewall. 
