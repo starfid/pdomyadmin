@@ -197,7 +197,7 @@ EOT;
 			
 			$html .= "<div id=\"content\">";
 			$html .= "<form action=\"?db=".$this->selectedDB."&tb=".$this->selectedTable."\" method=\"post\">";
-			$html .= "<textarea rows=\"10\" name=\"sql\" id=\"sql\" tabindex=\"1\" autocapitalize=\"off\" autofocus>".htmlentities($this->placeholder)."</textarea>";
+			$html .= "<textarea rows=\"10\" name=\"sql\" id=\"sql\" tabindex=\"1\" spellcheck=\"false\" autocapitalize=\"off\" autofocus>".htmlentities($this->placeholder)."</textarea>";
 			$html .= "<input type=\"button\" id=\"run\" value=\"Run\" tabindex=\"2\" onclick=\"encrypt()\">";
 			$html .= "</form>";
 			
