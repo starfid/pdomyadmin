@@ -158,7 +158,8 @@
 							encrypt();
 						}
 						function encrypt(){
-							document.getElementById("sql").value = btoa(document.getElementById("sql").value);
+							var str = document.getElementById("sql").value.replace(/[\u2018\u2019\u201C\u201D]/g, "\\\'");
+							document.getElementById("sql").value = btoa(str.trim());
 							document.getElementsByTagName("form")[0].submit();
 						}
 					</script>
