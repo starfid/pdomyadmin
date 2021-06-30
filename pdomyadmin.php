@@ -179,7 +179,7 @@ EOT;
 
 					$html .= "<ul id=\"tblist\">";
 					foreach($this->tableList as $tableName){
-						$html .= "<li><a href=\"?db=".$dbName."&tb=".$tableName."\">&nbsp;&nbsp; &#8866; ".$tableName."</a></li>";
+						$html .= "<li><a href=\"?db=".$dbName."&tb=".$tableName."&r=".time()."\">&nbsp;&nbsp; &#8866; ".$tableName."</a></li>";
 						if($tableName == $this->selectedTable && $dbName == $this->selectedDB){
 					
 							$html .= "<ul id=\"collist\">";
