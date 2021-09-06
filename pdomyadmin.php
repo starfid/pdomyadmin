@@ -119,7 +119,7 @@
 						form {width:100%;}
 						form, #info, th, td {border:solid #999999 1px;}
 						textarea, #run {display:block;background-color:white;padding:10px;border:none;outline:none;-webkit-appearance: none;-moz-appearance: none;border-radius:0}
-						textarea {resize:none;width:96%;}
+						textarea {resize:vertical;width:96%;}
 						#run {padding:10px;width:100%;border-top:solid #999999 1px;}
 						#run:focus {font-weight:bolder;}
 						#info {margin:20px 0;padding:10px}
