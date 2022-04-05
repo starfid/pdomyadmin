@@ -112,8 +112,9 @@
 						#nav a {color:#000000}
 						#tblist a {color:#555555}
 						#collist li {color:#888888}
-						#nav{box-sizing:border-box;width:auto;min-width:300px;height:auto;min-height:100%;border-right:1px solid #BFBFBF;border-bottom:1px solid #BFBFBF;}
+						#nav{box-sizing:border-box;width:auto;min-width:300px;height:auto;border-right:1px solid #BFBFBF;border-bottom:1px solid #BFBFBF;}
 						#nav, #info {background-color:#F3F3F3;}
+						#scrollUl {scrollbar-width:none;overflow:scroll;}
 						ul {list-style:none;}
 						#content{overflow-y:hidden;width:auto;}
 						form {width:100%;}
@@ -162,6 +163,16 @@
 							document.getElementById("sql").value = btoa(str.trim());
 							document.getElementsByTagName("form")[0].submit();
 						}
+						window.onload = function(){
+							var scrollTable = document.getElementById('scrollTable'),
+							scrollUl = document.getElementById('scrollUl'),
+							el = scrollTable.getBoundingClientRect();
+							if(parseInt(el.top)+parseInt(el.height)>window.innerHeight){
+								scrollTable.style.cssText = "overflow:scroll;height:"+(parseInt(window.innerHeight)-parseInt(el.top)-10)+"px";
+								document.getElementById('content').style.paddingBottom = 0;
+							}
+							scrollUl.style.height = (parseInt(window.innerHeight)-106)+"px";
+						}
 					</script>
 				</head>
 				<body>
@@ -172,7 +183,7 @@ EOT;
 			$html .= "<div id=\"header\"><h2>".($this->selectedDB?:"Database")." &gt; ".($this->selectedTable?:"Table")."</h2>";
 			$html .= "<h3 onclick=\"reveal()\">&#8801;</h3></div>";
 
-			$html .= "<ul id=\"nav\">";
+			$html .= "<div id=\"nav\"><ul id=\"scrollUl\">";
 			foreach($this->dbList as $dbName){
 				$html .= "<li><a href=\"?db=".$dbName."\">".$dbName."</a></li>";
 				if($dbName == $this->selectedDB) {
@@ -194,7 +205,7 @@ EOT;
 
 				}
 			}
-			$html .= "</ul>";
+			$html .= "</ul></div>";
 			
 			$html .= "<div id=\"content\">";
 			$html .= "<form action=\"?db=".$this->selectedDB."&tb=".$this->selectedTable."\" method=\"post\">";
@@ -207,7 +218,7 @@ EOT;
 			$html .= "<div id=\"info\"".$describe.">".$info."</div>";
 
 			if(is_array($this->result) && count($this->result) > 0) {
-				$html .= "<table cellpadding=\"10\">";
+				$html .= "<div id=\"scrollTable\"><table cellpadding=\"10\">";
 				
 				foreach($this->columnName as $name) {
 					if(strpos($name,' ')) $name = "`".$name."`";
@@ -227,7 +238,7 @@ EOT;
 					}
 					$html .= "</tr>";
 				}
-				$html .= "</table>";
+				$html .= "</table></div>";
 			}
 			
 			$html .= "</div>";
