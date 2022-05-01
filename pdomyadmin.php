@@ -6,7 +6,7 @@
 		private $param = Array(
 				"host" => "127.0.0.1",
 				"port" => "3306",
-				"user" => "root",
+				"user" => "your username",
 				"pass" => "your password"
 			),
 			$link, $placeholder, $benchmark,
@@ -25,10 +25,23 @@
 			if(isset($_POST['sql']) && !empty($_POST['sql'])){
 				$this->query(base64_decode($_POST['sql']));
 			}
-			elseif(!empty($this->selectedDB) && !empty($this->selectedTable)){
-				$this->query("select \n* \nfrom ".$this->selectedTable." \nlimit 10");
+			elseif(isset($_GET['tg']) && in_array($_GET['tg'],$this->triggerList)){
+				$this->query("select\n*\nfrom information_schema.triggers \nwhere \n\ttrigger_schema = '".$this->selectedDB."' and \n\ttrigger_name = '".$_GET['tg']."'");
+				$this->columnList = $this->result;
 			}
-
+			elseif(isset($_GET['gt'])){
+				$show = $_GET['gt']=='tg'?"show triggers":"select \n\ttable_name,\n\tview_definition \nfrom information_schema.views \nwhere \n\ttable_schema = '".$this->selectedDB."'";
+				$this->query($show);
+			}
+			elseif(!empty($this->selectedDB)){
+				if(!empty($this->selectedTable)){
+					$show = "select \n* \nfrom ".$this->selectedTable." \nlimit 10";
+				}
+				else {
+					$show = count($this->viewList)>0?"show full tables":"show tables";
+				}
+				$this->query($show);
+			}
 			echo $this->html();
 		}
 		
@@ -38,8 +51,16 @@
 			if(isset($_GET['db']) && !empty($_GET['db']) && in_array($_GET['db'],$this->dbList)){
 				$this->selectedDB = $_GET['db'];
 				$this->link->exec('use '.$this->selectedDB);
+
+				$this->query("show triggers");
+				$this->triggerList = $this->result;
+				
+				$this->query("show full tables where table_type = 'VIEW'");
+				$this->viewList = $this->result;
+
 				$this->query("show tables");
 				$this->tableList = $this->result;
+				
 				if(isset($_GET['tb']) && !empty($_GET['tb']) && in_array($_GET['tb'],$this->tableList)){
 					$this->selectedTable = $_GET['tb'];
 					$this->query("show columns \nfrom ".$this->selectedTable);
@@ -63,17 +84,17 @@
 			try {
 				$time_start = microtime(true);
 				
-				$sql = addcslashes($sql,'"'); //csv enclosed sign
+				$sql = addcslashes($sql,'"');
 				$query = $this->link->query($sql);
 				$this->querySpeed = number_format((microtime(true)-$time_start),4);
 				$this->placeholder = $sql;
 				$this->affectedRows = $query->rowCount();
 				
-				$noView = array('insert','update','delete','drop','truncate','alter','create');				
+				$noOutput = array('insert','update','delete','drop','truncate','alter','create');				
 				$this->command = trim(strtok(strtolower(preg_replace('/[^a-zA-Z0-9\s]/',' ', $sql)),' '));
 				
 				if(!$this->userSQL) $result = $query->fetchAll(PDO::FETCH_COLUMN);
-				elseif(!in_array($this->command,$noView)) $result = $query->fetchAll(PDO::FETCH_ASSOC);
+				elseif(!in_array($this->command,$noOutput)) $result = $query->fetchAll(PDO::FETCH_ASSOC);
 				
 				$this->columnName = Array();	
 				if($query->columnCount() > 0) {
@@ -112,7 +133,7 @@
 						#nav a {color:#000000}
 						#tblist a {color:#555555}
 						#collist li {color:#888888}
-						#nav{box-sizing:border-box;width:auto;min-width:300px;height:auto;border-right:1px solid #BFBFBF;border-bottom:1px solid #BFBFBF;}
+						#nav{box-sizing:border-box;width:auto;min-width:300px;border-right:1px solid #BFBFBF;border-bottom:1px solid #BFBFBF;}
 						#nav, #info {background-color:#F3F3F3;}
 						#scrollUl {scrollbar-width:none;overflow:scroll;}
 						ul {list-style:none;}
@@ -121,7 +142,7 @@
 						form, #info, th, td {border:solid #999999 1px;}
 						textarea, #run {display:block;background-color:white;padding:10px;border:none;outline:none;-webkit-appearance: none;-moz-appearance: none;border-radius:0}
 						textarea {resize:vertical;width:96%;}
-						#run {padding:10px;width:100%;border-top:solid #999999 1px;}
+						#run {padding:10px;width:100%;border-top:solid #999999 1px;color:black}
 						#run:focus {font-weight:bolder;}
 						#info {margin:20px 0;padding:10px}
 						table {border-collapse:collapse;font-size:20px}
@@ -144,34 +165,49 @@
 						}
 					</style>
 					<script type="text/javascript">
-						function reveal(){
-							var nav = document.getElementById('nav').style,
-							content = document.getElementById('content').style;
+						var $ = (el) => {
+							return document.querySelector(el);
+						},
+						reveal = () => {
+							var nav = $('#nav').style,
+							content = $('#content').style;
 							nav.display = nav.display=='block'?'none':'block';
 							content.display = nav.display=='block'?'none':'block';
-						}
-						function sort(tbl,col) {
-							document.getElementById("sql").value = "select \\n* \\nfrom "+tbl+" \\norder by "+col+" desc \\nlimit 10";
+						},
+						sort = (tbl,col) => {
+							$("#sql").value = "select \\n* \\nfrom "+tbl+" \\norder by "+col+" desc \\nlimit 10";
 							encrypt();
-						}
-						function describe(tbl){
-							document.getElementById("sql").value = "describe "+tbl;
+						},
+						describe = (tbl,db) => {
+							var sql = "describe "+tbl;
+							if(db!='') {
+								sql = "select \\n\\tview_definition \\nfrom information_schema.views \\nwhere ";
+								sql = sql + "\\n\\ttable_schema = '"+db+"' and \\n\\ttable_name = '"+tbl+"'";
+							}
+							$("#sql").value = sql;
 							encrypt();
-						}
-						function encrypt(){
-							var str = document.getElementById("sql").value.replace(/[\u2018\u2019\u201C\u201D]/g, "\\\'");
-							document.getElementById("sql").value = btoa(str.trim());
-							document.getElementsByTagName("form")[0].submit();
-						}
-						window.onload = function(){
-							var scrollTable = document.getElementById('scrollTable'),
-							scrollUl = document.getElementById('scrollUl'),
-							el = scrollTable.getBoundingClientRect();
+						},
+						encrypt = () => {
+							var str = $("#sql").value.replace(/[\u2018\u2019\u201C\u201D]/g, "\\\'");
+							$("#sql").value = btoa(str.trim());
+							$("form").submit();
+						},
+						tableView = () => {
+							var el = $('#scrollTable').getBoundingClientRect();
 							if(parseInt(el.top)+parseInt(el.height)>window.innerHeight){
 								scrollTable.style.cssText = "overflow:scroll;height:"+(parseInt(window.innerHeight)-parseInt(el.top)-10)+"px";
-								document.getElementById('content').style.paddingBottom = 0;
+								$('#content').style.paddingBottom = 0;
 							}
-							scrollUl.style.height = (parseInt(window.innerHeight)-106)+"px";
+						};
+						window.onload = function(){
+							if(parseInt(screen.width)>1000){
+								$('#scrollTable') && tableView();
+								$('#scrollUl').style.height = (parseInt(window.innerHeight)-106)+"px";
+								$('#nav').style.height = (window.innerHeight-$('#header').getBoundingClientRect()['height'])+"px";
+							}
+							else {
+								$('#nav').style.minHeight = (window.innerHeight-62) + "px";
+							}
 						}
 					</script>
 				</head>
@@ -189,8 +225,19 @@ EOT;
 				if($dbName == $this->selectedDB) {
 
 					$html .= "<ul id=\"tblist\">";
+					if(count($this->triggerList)>0){
+						$html .= "<li><a href=\"?db=".$dbName."&gt=tg&r=".time()."\">&nbsp;&nbsp; &#9872; Triggers</a></li>";
+						if(isset($_GET['gt']) && $_GET['gt']=='tg'){
+							$html .= "<ul id=\"collist\">";
+							foreach($this->triggerList as $triggerName){
+								$html .= "<li><a href=\"?db=".$dbName."&gt=tg&tg=".$triggerName."&r=".time()."\">&nbsp; &nbsp; &nbsp;&nbsp; &#8627; ".$triggerName."</a></li>";	
+							}
+							$html .= "</ul>";
+						}
+					}					
 					foreach($this->tableList as $tableName){
-						$html .= "<li><a href=\"?db=".$dbName."&tb=".$tableName."&r=".time()."\">&nbsp;&nbsp; &#8866; ".$tableName."</a></li>";
+						$icon = in_array($tableName,$this->viewList)?"&#9880;":"&#8866;";
+						$html .= "<li><a href=\"?db=".$dbName."&tb=".$tableName."&r=".time()."\">&nbsp;&nbsp; ".$icon." ".$tableName."</a></li>";
 						if($tableName == $this->selectedTable && $dbName == $this->selectedDB){
 					
 							$html .= "<ul id=\"collist\">";
@@ -214,7 +261,8 @@ EOT;
 			$html .= "</form>";
 			
 			$info = !empty($this->error)?$this->error:$this->affectedRows." rows in ".$this->querySpeed." seconds";
-			$describe = empty($this->selectedTable)?:" onclick=\"describe('".$this->selectedTable."')\"";
+			$isView = isset($this->viewList) && in_array($this->selectedTable,$this->viewList)?$this->selectedDB:"";
+			$describe = empty($this->selectedTable)?:" onclick=\"describe('".$this->selectedTable."','".$isView."')\"";
 			$html .= "<div id=\"info\"".$describe.">".$info."</div>";
 
 			if(is_array($this->result) && count($this->result) > 0) {
