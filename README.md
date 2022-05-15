@@ -7,4 +7,5 @@
 - Dark mode.
 - Tested on PHP 5.3 - 8.
 - Encrypted SQL query to bypass Web Application Firewall. 
+- Showing Trigger and View.
 - Download result in CSV.
