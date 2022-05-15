@@ -121,6 +121,7 @@
 					<meta content="width=device-width,initial-scale=1,shrink-to-fit=no" name="viewport" />
 					<meta content="notranslate" name="google" />
 					<meta content="telephone=no" name="format-detection" />
+					<link rel="icon" href="data:,">
 					<style>
 						html,body{height:100%;width:100%}
 						body,textarea,table,ul,a,h1,h2,h3,#run {margin:0;padding:0;font-family:arial;font-size:20px;font-weight:normal}
@@ -134,22 +135,23 @@
 						#tblist a {color:#555555}
 						#collist li {color:#888888}
 						#nav{box-sizing:border-box;width:auto;min-width:300px;border-right:1px solid #BFBFBF;border-bottom:1px solid #BFBFBF;}
-						#nav, #info {background-color:#F3F3F3;}
+						#nav, .float {background-color:#F3F3F3;}
 						#scrollUl {scrollbar-width:none;overflow:scroll;}
 						ul {list-style:none;}
 						#content{overflow-y:hidden;width:auto;}
 						form {width:100%;}
-						form, #info, th, td {border:solid #999999 1px;}
+						form, .float, th, td {border:solid #999999 1px;}
 						textarea, #run {display:block;background-color:white;padding:10px;border:none;outline:none;-webkit-appearance: none;-moz-appearance: none;border-radius:0}
 						textarea {resize:vertical;width:96%;}
 						#run {padding:10px;width:100%;border-top:solid #999999 1px;color:black}
 						#run:focus {font-weight:bolder;}
-						#info {margin:20px 0;padding:10px}
+						.float {margin:20px 0;width:100%;overflow:hidden} .left {float:left;width:auto} #save {cursor:pointer;float:right;width:auto;text-align:right}
+						.float div {padding:10px;}
 						table {border-collapse:collapse;font-size:20px}
 						th {background-color:#E6E6E6;font-weight:normal;cursor:pointer}
 						@media (prefers-color-scheme: dark) {
 							body,#content {background-color:#353431}
-							#nav, form, textarea, #run, #info, th,td {color:#ffffff;background-color:#3E3D39;border-color:#353431}
+							#nav, form, textarea, #run, .float, th,td {color:#ffffff;background-color:#3E3D39;border-color:#353431}
 							#nav a {color:#E0DED9;}
 							#nav {border:0}
 							#tblist a {color:#C8C5BB}
@@ -198,6 +200,30 @@
 								scrollTable.style.cssText = "overflow:scroll;height:"+(parseInt(window.innerHeight)-parseInt(el.top)-10)+"px";
 								$('#content').style.paddingBottom = 0;
 							}
+						},
+						download = () => {
+							var rows = document.querySelectorAll('table#dat tr');
+							var csv = [];
+							for (var i = 0; i < rows.length; i++) {
+								var row = [], cols = rows[i].querySelectorAll('td, th');
+								for (var j = 0; j < cols.length; j++) {
+									var data = cols[j].innerText.replace(/(\\r\\n|\\n|\\r)/gm, '').replace(/(\\s\\s)/gm, ' ');
+									data = data.replace(/"/g, '""');
+									row.push('"' + data + '"');
+								}
+								csv.push(row.join(','));
+							}
+							var csv_string = csv.join('\\n');
+							var filename = 'export_' + new Date().toLocaleDateString() + '.csv';
+							var link = document.createElement('a');
+							link.style.display = 'none';
+							link.setAttribute('target', '_blank');
+							link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+							link.setAttribute('download', filename);
+							document.body.appendChild(link);
+							link.click();
+							document.body.removeChild(link);
+							window.event.preventDefault();
 						};
 						window.onload = function(){
 							if(parseInt(screen.width)>1000){
@@ -208,7 +234,7 @@
 							else {
 								$('#nav').style.minHeight = (window.innerHeight-62) + "px";
 							}
-						}
+						};
 					</script>
 				</head>
 				<body>
@@ -263,10 +289,10 @@ EOT;
 			$info = !empty($this->error)?$this->error:$this->affectedRows." rows in ".$this->querySpeed." seconds";
 			$isView = isset($this->viewList) && in_array($this->selectedTable,$this->viewList)?$this->selectedDB:"";
 			$describe = empty($this->selectedTable)?:" onclick=\"describe('".$this->selectedTable."','".$isView."')\"";
-			$html .= "<div id=\"info\"".$describe.">".$info."</div>";
+			$html .= "<div class=\"float\"><div class=\"left\" id=\"info\"".$describe.">".$info."</div><div onclick=\"download()\" title=\"Download Result\" id=\"save\">&#128427;</div></div>";
 
 			if(is_array($this->result) && count($this->result) > 0) {
-				$html .= "<div id=\"scrollTable\"><table cellpadding=\"10\">";
+				$html .= "<div id=\"scrollTable\"><table cellpadding=\"10\" id=\"dat\">";
 				
 				foreach($this->columnName as $name) {
 					if(strpos($name,' ')) $name = "`".$name."`";
