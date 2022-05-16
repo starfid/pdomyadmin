@@ -4,8 +4,9 @@
 - Single PHP file, less than 13Kb.
 - PHP Data Object (PDO).
 - Responsive web page.
-- Dark mode.
+- Dark mode following OS system.
 - Tested on PHP 5.3 - 8.
 - Encrypted SQL query to bypass Web Application Firewall. 
+- Click query execution time to reveal table description.
 - Showing Trigger and View.
 - Download result in CSV.
