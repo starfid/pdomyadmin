@@ -224,6 +224,17 @@
 							link.click();
 							document.body.removeChild(link);
 							window.event.preventDefault();
+						},
+						indent = (txt,evt) => {
+							var evt = (evt) ? evt : ((event) ? event : null);
+							if(evt.keyCode==9){
+								evt.preventDefault();
+								var startPos = txt.selectionStart;
+								var endPos = txt.selectionEnd;
+								txt.value = txt.value.substring(0, startPos) + '\\t' + txt.value.substring(endPos, txt.value.length);
+								txt.selectionStart = startPos + 1;
+								txt.selectionEnd = startPos + 1;
+							}
 						};
 						window.onload = function(){
 							if(parseInt(screen.width)>1000){
@@ -282,7 +293,7 @@ EOT;
 			
 			$html .= "<div id=\"content\">";
 			$html .= "<form action=\"?db=".$this->selectedDB."&tb=".$this->selectedTable."\" method=\"post\">";
-			$html .= "<textarea rows=\"10\" name=\"sql\" id=\"sql\" tabindex=\"1\" spellcheck=\"false\" autocapitalize=\"off\" autofocus>".htmlentities($this->placeholder)."</textarea>";
+			$html .= "<textarea onkeydown=\"indent(this)\" rows=\"10\" name=\"sql\" id=\"sql\" tabindex=\"1\" spellcheck=\"false\" autocapitalize=\"off\" autofocus>".htmlentities($this->placeholder)."</textarea>";
 			$html .= "<input type=\"button\" id=\"run\" value=\"Run\" tabindex=\"2\" onclick=\"encrypt()\">";
 			$html .= "</form>";
 			
