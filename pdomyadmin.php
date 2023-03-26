@@ -136,13 +136,13 @@
 						#collist li {color:#888888}
 						#nav{box-sizing:border-box;width:auto;min-width:300px;border-right:1px solid #BFBFBF;border-bottom:1px solid #BFBFBF;}
 						#nav, .float {background-color:#F3F3F3;}
-						#scrollUl {scrollbar-width:none;overflow:scroll;}
+						#scrollUl {overflow:scroll;scrollbar-width:none;} #scrollUl::-webkit-scrollbar {display: none;}
 						ul {list-style:none;}
-						#content{overflow-y:hidden;width:auto;}
+						#content{overflow:hidden;width:auto;}
 						form {width:100%;}
 						form, .float, th, td {border:solid #999999 1px;}
 						textarea, #run {display:block;background-color:white;padding:10px;border:none;outline:none;-webkit-appearance: none;-moz-appearance: none;border-radius:0}
-						textarea {resize:vertical;width:96%;}
+						textarea {resize:vertical;width:calc(100% - 20px);scrollbar-width:none;}
 						#run {padding:10px;width:100%;border-top:solid #999999 1px;color:black}
 						#run:focus {font-weight:bolder;}
 						.float {margin:20px 0;width:100%;overflow:hidden} .left {float:left;width:auto} #save {cursor:pointer;float:right;width:auto;text-align:right}
@@ -241,6 +241,10 @@
 								$('#scrollTable') && tableView();
 								$('#scrollUl').style.height = (parseInt(window.innerHeight)-106)+"px";
 								$('#nav').style.height = (window.innerHeight-$('#header').getBoundingClientRect()['height'])+"px";
+								if(document.querySelectorAll('#dat th').length<10){
+									console.log($('#scrollTable'));
+									$('#scrollTable').style.overflowX = "hidden";
+								}
 							}
 							else {
 								$('#nav').style.minHeight = (window.innerHeight-62) + "px";
