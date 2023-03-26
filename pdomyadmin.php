@@ -170,6 +170,7 @@
 						var $ = (el) => {
 							return document.querySelector(el);
 						},
+						tb = 0,
 						reveal = () => {
 							var nav = $('#nav').style,
 							content = $('#content').style;
@@ -195,10 +196,12 @@
 							$("form").submit();
 						},
 						tableView = () => {
-							var el = $('#scrollTable').getBoundingClientRect();
-							if(parseInt(el.top)+parseInt(el.height)>window.innerHeight){
-								scrollTable.style.cssText = "overflow:scroll;height:"+(parseInt(window.innerHeight)-parseInt(el.top)-10)+"px";
+							if(parseInt(tb.top)+parseInt(tb.height)>window.innerHeight){
+								scrollTable.style.cssText = "overflow:scroll;height:"+(parseInt(window.innerHeight)-parseInt(tb.top)-10)+"px";
 								$('#content').style.paddingBottom = 0;
+							}
+							else if((parseInt(tb.left)+parseInt(tb.width))>(parseInt(window.innerWidth)-parseInt(tb.left)-10)){
+								scrollTable.style.overflowX = "scroll";
 							}
 						},
 						download = () => {
@@ -237,12 +240,12 @@
 							}
 						};
 						window.onload = function(){
+							tb = $('#dat').getBoundingClientRect();
 							if(parseInt(screen.width)>1000){
 								$('#scrollTable') && tableView();
 								$('#scrollUl').style.height = (parseInt(window.innerHeight)-106)+"px";
 								$('#nav').style.height = (window.innerHeight-$('#header').getBoundingClientRect()['height'])+"px";
-								if(document.querySelectorAll('#dat th').length<10){
-									console.log($('#scrollTable'));
+								if(parseInt(tb.width)<$('#scrollTable').getBoundingClientRect().width+10){
 									$('#scrollTable').style.overflowX = "hidden";
 								}
 							}
@@ -297,7 +300,7 @@ EOT;
 			
 			$html .= "<div id=\"content\">";
 			$html .= "<form action=\"?db=".$this->selectedDB."&tb=".$this->selectedTable."\" method=\"post\">";
-			$html .= "<textarea onkeydown=\"indent(this)\" rows=\"10\" name=\"sql\" id=\"sql\" tabindex=\"1\" spellcheck=\"false\" autocapitalize=\"off\" autofocus>".htmlentities($this->placeholder)."</textarea>";
+			$html .= "<textarea onkeydown=\"indent(this)\" rows=\"8\" name=\"sql\" id=\"sql\" tabindex=\"1\" spellcheck=\"false\" autocapitalize=\"off\" autofocus>".htmlentities($this->placeholder)."</textarea>";
 			$html .= "<input type=\"button\" id=\"run\" value=\"Run\" tabindex=\"2\" onclick=\"encrypt()\">";
 			$html .= "</form>";
 			
