@@ -240,14 +240,19 @@
 							}
 						};
 						window.onload = function(){
-							tb = $('#dat').getBoundingClientRect();
 							if(parseInt(screen.width)>1000){
 								$('#scrollTable') && tableView();
 								$('#scrollUl').style.height = (parseInt(window.innerHeight)-106)+"px";
 								$('#nav').style.height = (window.innerHeight-$('#header').getBoundingClientRect()['height'])+"px";
-								if(parseInt(tb.width)<$('#scrollTable').getBoundingClientRect().width+10){
-									$('#scrollTable').style.overflowX = "hidden";
+								var col = document.getElementById('collist');
+								col && document.getElementById('scrollUl').scroll(0,col.previousSibling.offsetTop-82);
+								if($('#dat')){
+									tb = $('#dat').getBoundingClientRect();
+									if(parseInt(tb.width)<$('#scrollTable').getBoundingClientRect().width+10){
+										$('#scrollTable').style.overflowX = "hidden";
+									}
 								}
+
 							}
 							else {
 								$('#nav').style.minHeight = (window.innerHeight-62) + "px";
