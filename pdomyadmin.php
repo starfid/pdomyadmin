@@ -243,18 +243,20 @@
 							if(!!$('#dat') && parseInt(screen.width)>1000){
 								tb = $('#dat').getBoundingClientRect();
 								$('#scrollTable') && tableView();
-								$('#scrollUl').style.height = (parseInt(window.innerHeight)-106)+"px";
 								$('#nav').style.height = (window.innerHeight-$('#header').getBoundingClientRect()['height'])+"px";
-								var col = document.getElementById('collist');
-								col && document.getElementById('scrollUl').scroll(0,col.previousSibling.offsetTop-82);
 								if(parseInt(tb.width)<$('#scrollTable').getBoundingClientRect().width+10){
 									$('#scrollTable').style.overflowX = "hidden";
 								}
-
 							}
 							else {
 								$('#nav').style.minHeight = (window.innerHeight-62) + "px";
 							}
+							var col = document.getElementById('collist');
+							if(col) {
+								$('#scrollUl').style.height = (parseInt(window.innerHeight)-106)+"px";
+								document.getElementById('scrollUl').scroll(0,col.previousSibling.offsetTop-82);
+							}
+							
 						};
 					</script>
 				</head>
