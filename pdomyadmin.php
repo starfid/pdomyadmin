@@ -71,7 +71,7 @@
 		
 		private function connect() {
 			try {
-				$this->link = new PDO("mysql:host=".$this->param['host'].";port=".$this->param['port'],$this->param['user'],$this->param['pass']);
+				$this->link = new PDO("mysql:host=".$this->param['host'].";charset=utf8mb4;port=".$this->param['port'],$this->param['user'],$this->param['pass']);
 				$this->link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			}
 			catch(PDOException $e) {
@@ -192,7 +192,7 @@
 						},
 						encrypt = () => {
 							var str = $("#sql").value.replace(/[\u2018\u2019\u201C\u201D]/g, "\\\'");
-							$("#sql").value = btoa(str.trim());
+							$("#sql").value = btoa(unescape(encodeURIComponent(str.trim())));
 							$("form").submit();
 						},
 						tableView = () => {
