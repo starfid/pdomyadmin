@@ -327,7 +327,7 @@ EOT;
 					$html .= "<tr>";
 					if(is_array($row)) {
 						foreach($row as $data) {
-							$html .= "<td valign='top'>".htmlspecialchars($data ?? '')."</td>";
+							$html .= "<td valign='top'>".htmlspecialchars(isset($data) ? $data : '')."</td>";
 						}
 					}
 					else {
