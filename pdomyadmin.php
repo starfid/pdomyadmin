@@ -26,11 +26,11 @@
 				$this->query(base64_decode($_POST['sql']));
 			}
 			elseif(isset($_GET['tg']) && in_array($_GET['tg'],$this->triggerList)){
-				$this->query("select\n*\nfrom information_schema.triggers \nwhere \n\ttrigger_schema = '".$this->selectedDB."' and \n\ttrigger_name = '".$_GET['tg']."'");
+				$this->query("select\n*\nfrom information_schema.triggers \nwhere \n\ttrigger_schema = '`".$this->selectedDB."`' and \n\ttrigger_name = '".$_GET['tg']."'");
 				$this->columnList = $this->result;
 			}
 			elseif(isset($_GET['gt'])){
-				$show = $_GET['gt']=='tg'?"show triggers":"select \n\ttable_name,\n\tview_definition \nfrom information_schema.views \nwhere \n\ttable_schema = '".$this->selectedDB."'";
+				$show = $_GET['gt']=='tg'?"show triggers":"select \n\ttable_name,\n\tview_definition \nfrom information_schema.views \nwhere \n\ttable_schema = '`".$this->selectedDB."`'";
 				$this->query($show);
 			}
 			elseif(!empty($this->selectedDB)){
@@ -50,7 +50,7 @@
 			$this->dbList = $this->result;
 			if(isset($_GET['db']) && !empty($_GET['db']) && in_array($_GET['db'],$this->dbList)){
 				$this->selectedDB = $_GET['db'];
-				$this->link->exec('use '.$this->selectedDB);
+				$this->link->exec('use `'.$this->selectedDB.'`');
 
 				$this->query("show triggers");
 				$this->triggerList = $this->result;
@@ -327,7 +327,7 @@ EOT;
 					$html .= "<tr>";
 					if(is_array($row)) {
 						foreach($row as $data) {
-							$html .= "<td valign='top'>".htmlspecialchars(isset($data) ? $data : '')."</td>";
+							$html .= "<td valign='top'>".htmlspecialchars($data ?? '')."</td>";
 						}
 					}
 					else {
